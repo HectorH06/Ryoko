@@ -17,7 +17,7 @@
 ### General Description
 Main functions taken from https://dev.to/chukhraiartur/scrape-google-flights-with-python-4dln
 ```diff
-- Warnings
+- THIS PROJECT HAS NOT BEEN CONCLUDED, IT WORKS THO
 ```
 
 ## Installation
@@ -27,13 +27,11 @@ Main functions taken from https://dev.to/chukhraiartur/scrape-google-flights-wit
    `pip install playwright selectolax`
    `playwright install chromium`
 
-## Launch arguments
-
-
-
 ## Features
 
-
+- Scrapes flights
+- Unit: individually scraping, just informations with specific params
+- Process: massive scraping, saves info with pandas in an excel file so it can be analyzed later
 
 ## Future Features
 
