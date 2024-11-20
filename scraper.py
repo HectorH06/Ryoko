@@ -118,8 +118,8 @@ def run(sched, playwright):
     google_flights_results = scrape_google_flights(parser)
 
     if not google_flights_results:
-        print("No se encontraron resultados de vuelos.")
-        return None
+        print("No se encontraron resultados de vuelos para la ruta especificada.")
+        return {"message": "No flights found"}
 
     print(json.dumps(google_flights_results, indent=2, ensure_ascii=False))
     return google_flights_results
