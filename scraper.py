@@ -3,59 +3,62 @@ from selectolax.lexbor import LexborHTMLParser
 import json, time
 
 
-
 def get_page(playwright, from_place, to_place, departure_date, return_date):
-    page = playwright.chromium.launch(headless=False).new_page()
+    browser = playwright.chromium.launch(headless=True, args=["--window-position=-10000,-10000"])
+    #browser = playwright.chromium.launch(headless=False)
+    page = browser.new_page()
     page.goto('https://www.google.com/travel/flights?hl=en-US&curr=MXN')
 
     # type "From"
+    impatience = 0.3
+    patience = 1.5
     from_place_field = page.query_selector_all('.e5F5td')[0]
     from_place_field.click()
-    time.sleep(1)
+    time.sleep(impatience)
     from_place_field.type(from_place)
-    time.sleep(1)
+    time.sleep(impatience)
     page.keyboard.press('Enter')
 
     # type "To"
     to_place_field = page.query_selector_all('.e5F5td')[1]
     to_place_field.click()
-    time.sleep(1)
+    time.sleep(impatience)
     to_place_field.type(to_place)
-    time.sleep(1)
+    time.sleep(impatience)
     page.keyboard.press('Enter')
 
     # type "Departure date"
     departure_date_field = page.query_selector_all('[aria-label="Departure"]')[0]
     departure_date_field.click()
-    time.sleep(1)
+    time.sleep(impatience)
     departure_date_field.type(departure_date)
-    time.sleep(1)
+    time.sleep(impatience)
     page.query_selector('.WXaAwc .VfPpkd-LgbsSe').click()
-    time.sleep(1)
+    time.sleep(impatience)
 
     # type "Return date"
     return_date_field = page.query_selector_all('[aria-label="Return"]')[0]
     return_date_field.click()
-    time.sleep(1)
+    time.sleep(impatience)
     return_date_field.type(return_date)
-    time.sleep(1)
+    time.sleep(impatience)
     page.query_selector('.WXaAwc .VfPpkd-LgbsSe').click()
-    time.sleep(1)
+    time.sleep(impatience)
 
     # press "Explore"
     page.query_selector('.MXvFbd .VfPpkd-LgbsSe').click()
-    time.sleep(2)
+    time.sleep(patience)
 
     # press "More Flights"
     if type(page.query_selector('.ZVk93d button')) is 'NoneType':
         page.query_selector('.ZVk93d button').click()
-        time.sleep(2)
+        time.sleep(patience)
 
     parser = LexborHTMLParser(page.content())
     page.close()
+    browser.close()
 
-    return parser
-
+    return parser # takes between 8 and 10 seconds per page with those values for time.sleep when scraping massively
 
 
 def scrape_google_flights(parser):
@@ -75,7 +78,7 @@ def scrape_google_flights(parser):
             duration = result.css_first('.AdWm1c.gvkrdb').text()
             stops = result.css_first('.EfT7Ae .ogfYpf').text()
             emissions = result.css_first('.V1iAHe .AdWm1c').text()
-            #emission_comparison = result.css_first('.N6PNV').text()
+            # emission_comparison = result.css_first('.N6PNV').text()
             price = result.css_first('.U3gSDe .FpEdX span').text()
             price_type = result.css_first('.U3gSDe .N872Rd').text() if result.css_first('.U3gSDe .N872Rd') else None
 
@@ -86,7 +89,7 @@ def scrape_google_flights(parser):
                 'duration': duration,
                 'stops': stops,
                 'emissions': emissions,
-                #'emission_comparison': emission_comparison,
+                # 'emission_comparison': emission_comparison,
                 'price': price,
                 'price_type': price_type
             }
@@ -105,7 +108,6 @@ def scrape_google_flights(parser):
         data[category.text().lower().replace(' ', '_')] = category_data
 
     return data
-
 
 
 def run(sched, playwright):

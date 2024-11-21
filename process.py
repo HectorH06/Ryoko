@@ -21,8 +21,8 @@ for departure_days in range(1, 300):
     depart_date = depart + timedelta(days=departure_days)
     sched[2] = depart_date.strftime('%m-%d-%Y')
     
-    # 1 a 31 días como fecha de retorno
-    for return_offset in range(1, 31):
+    # 14 a 31 días para la fecha de retorno
+    for return_offset in [15, 31]:
         return_date = depart_date + timedelta(days=return_offset)
         sched[3] = return_date.strftime('%m-%d-%Y')
         
@@ -40,6 +40,8 @@ for departure_days in range(1, 300):
             df_flights = pd.DataFrame(all_flights)
             df_flights['date_added'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             df_flights['days'] = return_offset
+            df_flights['partida'] = sched[2]
+            df_flights['regreso'] = sched[3] 
             
             file_name = os.path.join(full_path, f'{dest}.xlsx')
             
