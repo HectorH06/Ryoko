@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 from scraper import run
 
 orig = "Guadalajara"
-dest = "Tokyo"
+dest = "Mexico City"
 
 base_dir = "Ryokou"
 full_path = os.path.join(base_dir, dest)
