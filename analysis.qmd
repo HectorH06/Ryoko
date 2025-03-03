@@ -1,0 +1,71 @@
+---
+title: "Análisis de Series Temporales de Viajes"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tsibble)
+library(feasts)
+library(fable)
+library(lubridate)
+```
+
+## Cargar y procesar datos
+
+```{r}
+# Cargar datos desde Excel
+df <- readxl::read_excel("Ryokou/Mexico City/Mexico City.xlsx", sheet = "Sheet1")
+
+# Convertir columnas de fecha y asegurar que price sea numérico
+df <- df %>% 
+  mutate(partida = dmy(partida),
+         regreso = dmy(regreso),
+         days = as.numeric(difftime(regreso, partida, units = "days")),
+         price = as.numeric(gsub("[^0-9.]", "", as.character(price))))
+
+# Eliminar filas con fechas o precios NA
+df <- df %>% filter(!is.na(partida) & !is.na(price))
+
+# Asegurar unicidad del índice
+df <- df %>% group_by(partida) %>% mutate(row_id = row_number())
+
+# Separar en dos tsibbles si hay suficientes datos
+viajes_2semanas <- df %>% filter(days >= 14 & days <= 15)
+viajes_1mes <- df %>% filter(days >= 28 & days <= 30)
+
+if (nrow(viajes_2semanas) > 1 && length(unique(viajes_2semanas$price)) > 1) {
+  viajes_2semanas <- viajes_2semanas %>% as_tsibble(index = partida, key = row_id)
+} else {
+  viajes_2semanas <- NULL
+}
+
+if (nrow(viajes_1mes) > 1 && length(unique(viajes_1mes$price)) > 1) {
+  viajes_1mes <- viajes_1mes %>% as_tsibble(index = partida, key = row_id)
+} else {
+  viajes_1mes <- NULL
+}
+```
+
+## Análisis de Series Temporales
+
+```{r}
+if (!is.null(viajes_2semanas)) {
+  viajes_2semanas %>% 
+    model(STL(price ~ season(window = "periodic"))) %>% 
+    components() %>% 
+    autoplot()
+}
+
+if (!is.null(viajes_1mes)) {
+  viajes_1mes %>% 
+    model(STL(price ~ season(window = "periodic"))) %>% 
+    components() %>% 
+    autoplot()
+}
+```
+
+## Modelado con ARIMA
+
+\`\`\`{r} if (!is.null(viajes_2semanas)) { arima_2semanas \<- tryCatch({ model_fit \<- viajes_2semanas %\>% model(ARIMA(price)) if (nrow(augment
