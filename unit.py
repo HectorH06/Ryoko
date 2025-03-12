@@ -5,14 +5,14 @@ from playwright.sync_api import sync_playwright
 from scraper import run
 
 orig = "Guadalajara"
-dest = "Tijuana"
+dest = "Tokyo"
 
 base_dir = "Ryokou"
 full_path = os.path.join(base_dir, dest)
 
 # Search a single flight
 
-sched = [orig, dest, "04-24-2025", "04-27-2025"]
+sched = [orig, dest, "08-01-2025", "08-08-2025"]
 date_format = "%m-%d-%Y"
 start_date = datetime.strptime(sched[2], date_format)
 end_date = datetime.strptime(sched[3], date_format)

@@ -17,7 +17,7 @@
 ### General Description
 Main functions taken from https://dev.to/chukhraiartur/scrape-google-flights-with-python-4dln
 ```diff
-- THIS PROJECT HAS NOT BEEN CONCLUDED, IT WORKS THO
+- This project has not been concluded, it works tho
 ```
 
 ## Installation
